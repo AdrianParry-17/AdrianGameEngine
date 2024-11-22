@@ -18,6 +18,7 @@
 #include "Engine_Math.h"
 #include "Engine_Renderer.h"
 #include "Engine_Resource.h"
+#include "Engine_Sound.h"
 #include "Engine_Structure.h"
 #include "Engine_UIGameObject.h"
 #include "Engine_Window.h"

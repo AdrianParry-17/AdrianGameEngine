@@ -41,15 +41,35 @@ namespace Engine {
 
         /// @brief Play the given sound on a channel.
         /// @param sound The Sound to play.
+        /// @param ms The number of milliseconds to play the sound (default is -1 mean play until stopped).
         /// @param loop_count The number of loop to play (default is 0 mean not looping), or -1 to loop (not actually)
         /// infinitely.
         /// @param channel The channel to play. If -1 (default), will play on the first free channel.
         /// @return The channel that the sound is play, or -1 on failed.
-        static int PlaySound(Sound* sound, int loop_count = 0, int channel = -1) {
+        static int PlaySound(Sound* sound, int ms = -1, int loop_count = 0, int channel = -1) {
             if (!sound) return -1;
             if (!sound->__data) return -1;
-            return Mix_PlayChannel(channel, sound->__data, loop_count);
+            return Mix_PlayChannelTimed(channel, sound->__data, loop_count, ms);
         }
+        /// @brief Play the given sound on a channel, with fade in.
+        /// @param sound The Sound to play.
+        /// @param face_in_ms The number of milliseconds to fade in the sound.
+        /// @param ms The number of milliseconds to play the sound (default is -1 mean play until stopped).
+        /// @param loop_count The number of loop to play (default is 0 mean not looping), or -1 to loop (not actually)
+        /// infinitely.
+        /// @param channel The channel to play. If -1 (default), will play on the first free channel.
+        /// @return The channel that the sound is play, or -1 on failed.
+        static int FadeInSound(Sound* sound, int face_in_ms, int ms = -1, int loop_count = 0, int channel = -1) {
+            if (!sound) return -1;
+            if (!sound->__data) return -1;
+            return Mix_FadeInChannelTimed(channel, sound->__data, loop_count, face_in_ms, ms);
+        }
+
+        /// @brief Halt the given channel after the given amount of time, with fade out.
+        /// @param channel The channel to halt, or -1 to fade out all channels.
+        /// @param fade_out_ms The amount of time to fade out.
+        static void FadeOutChannel(int channel, int fade_out_ms) { Mix_FadeOutChannel(channel, fade_out_ms); }
+        
 
         /// @brief Pause a channel.
         /// @param channel The channel to pause, or -1 to pause all channel.
@@ -68,6 +88,10 @@ namespace Engine {
         /// @brief Halt/stop a channel from playing.
         /// @param channel The channel to halt, or -1 to halt all channel.
         static void HaltChannel(int channel) { Mix_HaltChannel(channel); }
+        /// @brief Set the amount of time to halt a channel.
+        /// @param channel The channel to set, or -1 to apply for all channels.
+        /// @param ms The amount of time in milliseconds to set, or -1 to disable.
+        static void SetChannelExpire(int channel, int ms) { Mix_ExpireChannel(channel, ms); }
 
         /// @brief Load a Sound from a file.
         /// @param file_path The file path of the sound file to load.
@@ -160,17 +184,40 @@ namespace Engine {
         ENGINE_NOT_COPYABLE(Music)
 
 
+        /// @brief Play the given music.
+        /// @param music The Music to play.
+        /// @param loop_count The number of loop to play (default is 0 mean not looping), or -1 to loop (not actually)
+        /// infinitely.
+        static void Play(Music* music, int loop_count = 0) {
+            if (!music) return;
+            if (!music->__data) return;
+            Mix_PlayMusic(music->__data, loop_count);
+        }
+        /// @brief Play the given music, with fade in.
+        /// @param music The Music to play.
+        /// @param fade_in_ms The amount of time in milliseconds to fade in.
+        /// @param loop_count The number of loop to play (default is 0 mean not looping), or -1 to loop (not actually)
+        /// infinitely.
+        static void FadeIn(Music* music, int fade_in_ms, int loop_count = 0) {
+            if (!music) return;
+            if (!music->__data) return;
+            Mix_FadeInMusic(music->__data, loop_count, fade_in_ms);
+        }
 
-        //TODO: Continue on music.
+        /// @brief Stop the given music.
+        static void Stop() { Mix_HaltMusic(); }
+        /// @brief Fade out and stop the given music.
+        /// @param fade_out_ms The amount of time in milliseconds to fade out.
+        static void FadeOut(int fade_out_ms) { Mix_FadeOutMusic(fade_out_ms); }
         
         /// @brief Load a Music from a file.
         /// @param file_path The file path of the sound file to load.
         /// @return The newly created Music, or nullptr on failed.
-        static Music* FromFile(const char* file_path) { return FromMixChunk(Mix_LoadWAV(file_path)); }
-        /// @brief Create a new Music from the given Mix_Chunk.
-        /// @param chunk The Mix_Chunk to create.
-        /// @return The newly created Music, or nullptr if the given Mix_Chunk is null.
-        static Music* FromMixChunk(Mix_Chunk* chunk) { return chunk ? new Music(chunk) : nullptr; }
+        static Music* FromFile(const char* file_path) { return FromMixChunk(Mix_LoadMUS(file_path)); }
+        /// @brief Create a new Music from the given Mix_Music.
+        /// @param chunk The Mix_Music to create.
+        /// @return The newly created Music, or nullptr if the given Mix_Music is null.
+        static Music* FromMixChunk(Mix_Music* chunk) { return chunk ? new Music(chunk) : nullptr; }
 
         /// @brief Execute an action for each created Music.
         /// @param action The action to execute.
@@ -235,5 +282,8 @@ namespace Engine {
 
 bool Engine::Sound::__is_destroy_all = false;
 std::unordered_set<Engine::Sound*> Engine::Sound::__created_sounds = std::unordered_set<Engine::Sound*>();
+
+bool Engine::Music::__is_destroy_all = false;
+std::unordered_set<Engine::Music*> Engine::Music::__created_musics = std::unordered_set<Engine::Music*>();
 
 #endif // __ENGINE_SOUND_H__
