@@ -29,6 +29,14 @@ And we moved the definition of the ```InitializeGame``` function to the bottom f
 
 Inside the ```InitializeGame``` function is where we'll initialize the game resources (image, font) and components (game objects/scenes, ...).
 
+So, let's adding some Game Objects.
 
+```cpp
+bool InitializeGame() {
+    // Create a new Game Object.
+    Engine::GameObject* box = new Engine::GameObject();
+    Engine::GameO
 
-
+    return true;
+}
+```
