@@ -463,7 +463,7 @@ namespace Engine {
         void RaiseMouseDownEvent(MouseButtonEventArgs* args, bool recursive = true) {
             MouseButtonEventArgs* tmp = !args ? new MouseButtonEventArgs() : args;
             OnGlobalMouseDown(tmp); GlobalMouseDownEvent.Call(this, tmp);
-            if (Rectangle(Point::Zero, Size).IsContain(tmp->LocalPosition)) {
+            if (Rectangle(Point::Zero, Size.Absolute()).IsContain(tmp->LocalPosition)) {
                 OnMouseDown(tmp); MouseDownEvent.Call(this, tmp);
             }
             if (recursive) {
@@ -472,7 +472,7 @@ namespace Engine {
                     if (!child->Enabled || !child->HandleInput) continue;
 
                     MouseButtonEventArgs child_args(*tmp);
-                    Rectangle child_area = GetArea().LocalToGlobal(child->GetArea(), child->Alignment);
+                    Rectangle child_area = Rectangle(Point::Zero, Size.Absolute()).LocalToGlobal(child->GetArea(), child->Alignment);
                     child_args.LocalPosition -= child_area.TopLeft();
 
                     child->RaiseMouseDownEvent(&child_args, recursive);
@@ -486,7 +486,7 @@ namespace Engine {
         void RaiseMouseUpEvent(MouseButtonEventArgs* args, bool recursive = true) {
             MouseButtonEventArgs* tmp = !args ? new MouseButtonEventArgs() : args;
             OnGlobalMouseUp(tmp); GlobalMouseUpEvent.Call(this, tmp);
-            if (Rectangle(Point::Zero, Size).IsContain(tmp->LocalPosition)) {
+            if (Rectangle(Point::Zero, Size.Absolute()).IsContain(tmp->LocalPosition)) {
                 OnMouseUp(tmp); MouseUpEvent.Call(this, tmp);
             }
             if (recursive) {
@@ -495,7 +495,7 @@ namespace Engine {
                     if (!child->Enabled || !child->HandleInput) continue;
 
                     MouseButtonEventArgs child_args(*tmp);
-                    Rectangle child_area = GetArea().LocalToGlobal(child->GetArea(), child->Alignment);
+                    Rectangle child_area = Rectangle(Point::Zero, Size.Absolute()).LocalToGlobal(child->GetArea(), child->Alignment);
                     child_args.LocalPosition -= child_area.TopLeft();
 
                     child->RaiseMouseUpEvent(&child_args, recursive);
@@ -509,7 +509,7 @@ namespace Engine {
         void RaiseMouseMovedEvent(MouseMotionEventArgs* args, bool recursive = true) {
             MouseMotionEventArgs* tmp = !args ? new MouseMotionEventArgs() : args;
             OnGlobalMouseMoved(tmp); GlobalMouseMovedEvent.Call(this, tmp);
-            if (Rectangle(Point::Zero, Size).IsContain(tmp->LocalPosition)) {
+            if (Rectangle(Point::Zero, Size.Absolute()).IsContain(tmp->LocalPosition)) {
                 OnMouseMoved(tmp); MouseMovedEvent.Call(this, tmp);
             }
             if (recursive) {
@@ -518,7 +518,7 @@ namespace Engine {
                     if (!child->Enabled || !child->HandleInput) continue;
 
                     MouseMotionEventArgs child_args(*tmp);
-                    Rectangle child_area = GetArea().LocalToGlobal(child->GetArea(), child->Alignment);
+                    Rectangle child_area = Rectangle(Point::Zero, Size.Absolute()).LocalToGlobal(child->GetArea(), child->Alignment);
                     child_args.LocalPosition -= child_area.TopLeft();
 
                     child->RaiseMouseMovedEvent(&child_args, recursive);
